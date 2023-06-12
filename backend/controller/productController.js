@@ -1,9 +1,11 @@
 import { productModel } from "../models/productModel.js";
 import ApiFeatures from "../utils/apiFeatures.js";
 
-//Create(post) Product -- Admin
+//Create Product -- Admin
 export const createProduct = async (req, res, next) => {
   try {
+    req.body.user = req.user.id;
+
     const product = await productModel.create(req.body);
 
     res.status(201).json({
@@ -15,32 +17,38 @@ export const createProduct = async (req, res, next) => {
   }
 };
 
-// Get(get) All Products
+// Get All Products
 export const getAllProducts = async (req, res, next) => {
   try {
-    console.log(req.query);
-   
-    const { keyword } = req.query;
-    // const apiFeature = new ApiFeatures(productModel.find(), req.query).search();
-    // const products = await apiFeature.query;
+    // const { keyword } = req.query;
+    const resultPerPage = 5;
+    const productCount = await productModel.countDocuments();
+    const apiFeature = new ApiFeatures(productModel.find(), req.query)
+      .search()
+      .filter()
+      .pagination(resultPerPage);
+    const products = await apiFeature.query;
 
-    const products = await productModel.find({
-      name: {
-        $regex: keyword,
-        $options: "i",
-      },
-    })
+    // apiFeature.pagination(resultPerPage);
+
+    // const products = await productModel.find({
+    //   name: {
+    //     $regex: keyword,
+    //     $options: "i",
+    //   },
+    // });
 
     res.status(200).json({
       success: true,
       products,
+      productCount,
     });
   } catch (error) {
     next(error);
   }
 };
 
-// Get Product Details
+// Get Single Product Details
 export const getProductDetails = async (req, res, next) => {
   try {
     const product = await productModel.findById(req.params.id);
@@ -59,7 +67,7 @@ export const getProductDetails = async (req, res, next) => {
   }
 };
 
-// Update(put) Product -- Admin
+// Update Product -- Admin
 export const updateProduct = async (req, res, next) => {
   try {
     let product = await productModel.findById(req.params.id);
