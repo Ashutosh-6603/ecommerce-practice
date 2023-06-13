@@ -19,12 +19,6 @@ export const registerUser = async (req, res, next) => {
       },
     });
 
-    // const token = user.getJWTToken();
-
-    // res.status(201).json({
-    //   status: true,
-    //   token,
-    // });
     sendToken(user, 201, res);
   } catch (error) {
     next(error);
@@ -56,12 +50,6 @@ export const loginUser = async (req, res, next) => {
       return next(new Error("Invalid Email or Password"));
     }
 
-    // const token = user.getJWTToken();
-
-    // res.status(200).json({
-    //   status: true,
-    //   token,
-    // });
     sendToken(user, 200, res);
   } catch (error) {
     next(error);
@@ -80,6 +68,23 @@ export const logout = async (req, res, next) => {
       success: true,
       message: "Logged Out",
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Forgot Password
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const user = await userModel.findOne({ email: req.body.email });
+
+    if (!user) {
+      res.status(404);
+      return next(new Error("User not found"));
+    }
+
+    // Get Reset Password Token
+    const resetToken = user.getResetPasswordToken();
   } catch (error) {
     next(error);
   }

@@ -27,6 +27,13 @@ const errorHandler = (error, request, response, next) => {
         success: false,
       });
       break;
+    case constant.NOT_FOUND:
+      response.json({
+        data: null,
+        title: "Not found",
+        message: error.message,
+        success: false,
+      });
     case constant.CONFLICT_ERROR:
       response.json({
         data: null,
