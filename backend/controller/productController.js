@@ -110,3 +110,50 @@ export const deleteProduct = async (req, res, next) => {
     next(error);
   }
 };
+
+// Create New Review or Update the review
+export const createProductReview = async (req, res, next) => {
+  try {
+    const { rating, comment, productId } = req.body;
+    const review = {
+      user: req.user._id,
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+    };
+
+    const product = await productModel.findById(productId);
+
+    const isReviewd = product.reviews.find(
+      (rev) => rev.user.toString() === req.user._id
+    );
+
+    if (isReviewd) {
+      product.reviews.forEach((rev) => {
+        if ((rev) => rev.user.toString() === req.user._id) {
+          rev.rating = rating;
+          rev.comment = comment;
+        }
+      });
+    } else {
+      product.reviews.push(review);
+      product.numOfReviews = product.reviews.length;
+    }
+
+    let avg = 0;
+
+    product.reviews.forEach((rev) => {
+      avg += rev.rating;
+    });
+
+    product.ratings = avg / product.reviews.length;
+
+    await product.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
