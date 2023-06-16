@@ -21,22 +21,13 @@ export const createProduct = async (req, res, next) => {
 export const getAllProducts = async (req, res, next) => {
   try {
     // const { keyword } = req.query;
-    const resultPerPage = 5;
+    const resultPerPage = 8;
     const productCount = await productModel.countDocuments();
     const apiFeature = new ApiFeatures(productModel.find(), req.query)
       .search()
       .filter()
       .pagination(resultPerPage);
     const products = await apiFeature.query;
-
-    // apiFeature.pagination(resultPerPage);
-
-    // const products = await productModel.find({
-    //   name: {
-    //     $regex: keyword,
-    //     $options: "i",
-    //   },
-    // });
 
     res.status(200).json({
       success: true,

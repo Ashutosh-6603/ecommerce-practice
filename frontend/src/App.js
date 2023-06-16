@@ -5,6 +5,7 @@ import WebFont from "webfontloader";
 import React, { useEffect } from "react";
 import Footer from "./component/layout/Footer/Footer.js";
 import Home from "./component/Home/Home.js";
+import Loader from "./component/layout/Loader/Loader";
 
 function App() {
   useEffect(() => {
@@ -21,6 +22,7 @@ function App() {
       <Home />
       <Routes>
         <Route exact path="/" component={Home} />
+        <Route exact path="/sad" component={Loader} />
       </Routes>
       <Footer />
     </BrowserRouter>
